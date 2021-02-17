@@ -1,95 +1,109 @@
 'use strict';
 
 const { expect } = require('chai');
+const { before } = require('mocha');
 const { browser } = require('protractor');
 const CareerPage = require('../pageObjects/careerPage.js');
 const careerPage = new CareerPage();
-
-describe('Search for a job', function () {
-    this.timeout(GLOBAL_TIMEOUT);
+const testData = require('../data.json');
 
 
-    describe('Carrer page', () => {
-        beforeEach(async () => {
-            await careerPage.load();
-        });
+testData.forEach(data => {
+    describe('Search for a job', function () {
+        this.timeout(GLOBAL_TIMEOUT);
 
-        it('should be opened', async () => {
-            expect(await careerPage.logo.isDisplayed()).to.be.true;
-        });
 
-        describe('Search form', () => {
-            it('should be displayed', async () => {
-                expect(await careerPage.searchForm.isDisplayed()).to.be.true;
+        describe('Carrer page', () => {
+            beforeEach(async () => {
+                await careerPage.load();
             });
 
-            //dropdown is not clickable
-            describe.skip('Location filter box', () => {
-                before(async () => {
-                    //click on location filter box
-                    await browser.wait(ec.visibilityOf(careerPage.locationFilterBox), GLOBAL_TIMEOUT);
-                    await careerPage.locationFilterBox.click();
-                    //select country/city
-                    await browser.wait(ec.visibilityOf(careerPage.getCountry), GLOBAL_TIMEOUT);
-                    await careerPage.getCountry.click();
-                    await browser.wait(ec.visibilityOf(careerPage.getCity), GLOBAL_TIMEOUT);
-                    await careerPage.getCity.click();
-                })
+            it('should be opened', async () => {
+                expect(await careerPage.logo.isDisplayed()).to.be.true;
+            });
 
-                it('should be able to select a location', async () => {
-                    expect(await careerPage.selectedLocation.getText()).to.be.equal('Debrecen');
+            describe('Search form', () => {
+                it('should be displayed', async () => {
+                    expect(await careerPage.searchForm.isDisplayed()).to.be.true;
+                });
+
+                //dropdown is not clickable
+                describe.skip('Location filter box', () => {
+                    before(async () => {
+                       await careerPage.selectLocation();
+                    })
+
+                    it('should be able to select a location', async () => {
+                        expect(await careerPage.selectedLocation.getText()).to.be.equal(data.City);
+                    });
+                });
+
+                //dropdown is not clickable
+                describe.skip('Skills filter box', () => {
+                    before(async () => {
+                       await careerPage.selectSkill();
+
+                    })
+                    it(`should be able to select skill`, async () => {
+                        expect(await careerPage.selectedSkill.getText()).to.contain(data.skill);
+                    });
                 });
             });
 
-            //dropdown is not clickable
-            describe.skip('Skills filter box', () => {
-                before(async () => {
-                    //click on skills filter box
-                    await browser.wait(ec.visibilityOf(careerPage.skillFilterBox), GLOBAL_TIMEOUT);
-                    await careerPage.skillFilterBox.click();
-                    //select a skill
-                    await browser.wait(ec.visibilityOf(careerPage.getSkill), GLOBAL_TIMEOUT);
-                    await careerPage.getSkill.click();
+            describe('Search result', () => {
+                beforeEach(async () => {
+                    await careerPage.loadResults(data.Country, data.City, data.Skill);
+                });
 
-                })
-                it(`should be able to select skill`, async () => {
-                    expect(await careerPage.selectedSkill.getText()).to.contain('Software Test Engineering');
+                it('should have proper position', async () => {
+                    expect(await careerPage.searchResults.getText()).length.to.be.greaterThan(0);
+                });
+
+                it('should have proper skill', async () => {
+                    expect(await careerPage.selectedSkill.getText()).to.be.equal(data.Skill.toUpperCase());
+                });
+
+                it('should have proper location', async () => {
+                    const locations = await careerPage.locations.getText();
+                    for (const location of locations) {
+                        expect(location.toUpperCase()).to.contain(data.City.toUpperCase());
+                    }
+                });
+
+                it('should have an apply link', async () => {
+                    const applyLinksVisibilities = await careerPage.applyLinks.map((link) => {
+                        return link.isDisplayed();
+                    })
+                    expect(applyLinksVisibilities.every(Boolean)).to.be.true;
+                    expect(applyLinksVisibilities.length).to.be.equal(await careerPage.searchResults.count());
+                });
+
+            });
+
+            describe('Job details', () => {
+                beforeEach(async () => {
+                    await careerPage.loadResults(data.Country, data.City, data.Skill);
+                    await careerPage.applyForPosition();
+                });
+
+                it('should have proper location', async () => {
+                    expect(await careerPage.jobHeader.getText()).to.be.contain(data.City);
+                });
+
+                it('should have proper position', async () => {
+                    expect(await careerPage.jobHeader.getText()).to.be.contain(data.Position);
+                });
+
+                it('should have mandatory fields', async () => {
+                    expect(await careerPage.inputFirstName.getAttribute('aria-required')).to.equal('true');
+                    expect(await careerPage.inputLastName.getAttribute('aria-required')).to.equal('true');
+                    expect(await careerPage.inputEmail.getAttribute('aria-required')).to.equal('true');
+                });
+
+                it('should have submit button', async () => {
+                    expect(await careerPage.submitButton.isDisplayed()).to.be.true;
                 });
             });
         });
-
-        describe('Search result', () => {
-            before(async () => {
-                //click on search button
-                await careerPage.loadResults('Hungary', 'Debrecen', 'Software Test Engineering');
-            });
-
-            it('should have proper position', async () => {
-                expect(await careerPage.getResultCount()).to.be.greaterThan(0);
-            });
-
-            it('should have proper skill');
-
-            it('should have proper location');
-
-            it('should have an apply button');
-
-        });
-
-        describe('Job details', () => {
-            before(() => {
-                //click on apply button
-            });
-
-            it('should have proper location');
-
-            it('should have proper position');
-
-            it('should have submit button');
-
-            it('should have mandatory fields');
-        });
-
     });
-
 });
