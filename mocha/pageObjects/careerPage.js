@@ -70,30 +70,36 @@ class CareerPage {
             if (isVisible) {
                 await this.cookieButton.click();
             }
-            await lastLink.click();
         } catch {
+            // NOOP
+        } finally {
             await lastLink.click();
         }
     }
 
+    getLastPosition() {
+        const lastPositionName = this.searchResults.last().element(by.css('h5'));
+        return lastPositionName.getText();
+    }
+
     async selectLocation() {
-         //click on location filter box
-         await browser.wait(ec.visibilityOf(careerPage.locationFilterBox), GLOBAL_TIMEOUT);
-         await careerPage.locationFilterBox.click();
-         //select country/city
-         await browser.wait(ec.visibilityOf(careerPage.getCountry), GLOBAL_TIMEOUT);
-         await careerPage.getCountry.click();
-         await browser.wait(ec.visibilityOf(careerPage.getCity), GLOBAL_TIMEOUT);
-         await careerPage.getCity.click();
+        //click on location filter box
+        await browser.wait(ec.visibilityOf(careerPage.locationFilterBox), GLOBAL_TIMEOUT);
+        await careerPage.locationFilterBox.click();
+        //select country/city
+        await browser.wait(ec.visibilityOf(careerPage.getCountry), GLOBAL_TIMEOUT);
+        await careerPage.getCountry.click();
+        await browser.wait(ec.visibilityOf(careerPage.getCity), GLOBAL_TIMEOUT);
+        await careerPage.getCity.click();
     }
 
     async selectSkill() {
-         //click on skills filter box
-         await browser.wait(ec.visibilityOf(careerPage.skillFilterBox), GLOBAL_TIMEOUT);
-         await careerPage.skillFilterBox.click();
-         //select a skill
-         await browser.wait(ec.visibilityOf(careerPage.getSkill), GLOBAL_TIMEOUT);
-         await careerPage.getSkill.click();
+        //click on skills filter box
+        await browser.wait(ec.visibilityOf(careerPage.skillFilterBox), GLOBAL_TIMEOUT);
+        await careerPage.skillFilterBox.click();
+        //select a skill
+        await browser.wait(ec.visibilityOf(careerPage.getSkill), GLOBAL_TIMEOUT);
+        await careerPage.getSkill.click();
     }
 };
 

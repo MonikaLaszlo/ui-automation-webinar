@@ -9,12 +9,12 @@ const testData = require('../data.json');
 
 
 testData.forEach(data => {
-    describe('Search for a job', function () {
+    describe(`Search for a ${data.Skill} job in ${data.Country}/${data.City}`, function () {
         this.timeout(GLOBAL_TIMEOUT);
 
 
-        describe('Carrer page', () => {
-            beforeEach(async () => {
+        describe('Career page', () => {
+            before(async () => {
                 await careerPage.load();
             });
 
@@ -30,10 +30,10 @@ testData.forEach(data => {
                 //dropdown is not clickable
                 describe.skip('Location filter box', () => {
                     before(async () => {
-                       await careerPage.selectLocation();
+                        await careerPage.selectLocation();
                     })
 
-                    it('should be able to select a location', async () => {
+                    it(`should be able to select location ${data.City}`, async () => {
                         expect(await careerPage.selectedLocation.getText()).to.be.equal(data.City);
                     });
                 });
@@ -41,29 +41,29 @@ testData.forEach(data => {
                 //dropdown is not clickable
                 describe.skip('Skills filter box', () => {
                     before(async () => {
-                       await careerPage.selectSkill();
+                        await careerPage.selectSkill();
 
                     })
-                    it(`should be able to select skill`, async () => {
+                    it(`should be able to select skill ${data.Skill}`, async () => {
                         expect(await careerPage.selectedSkill.getText()).to.contain(data.skill);
                     });
                 });
             });
 
             describe('Search result', () => {
-                beforeEach(async () => {
+                before(async () => {
                     await careerPage.loadResults(data.Country, data.City, data.Skill);
                 });
 
-                it('should have proper position', async () => {
+                it(`should have proper position ${data.Position}`, async () => {
                     expect(await careerPage.searchResults.getText()).length.to.be.greaterThan(0);
                 });
 
-                it('should have proper skill', async () => {
+                it(`should have proper skill ${data.Skill}`, async () => {
                     expect(await careerPage.selectedSkill.getText()).to.be.equal(data.Skill.toUpperCase());
                 });
 
-                it('should have proper location', async () => {
+                it(`should have proper location ${data.City}`, async () => {
                     const locations = await careerPage.locations.getText();
                     for (const location of locations) {
                         expect(location.toUpperCase()).to.contain(data.City.toUpperCase());
@@ -81,17 +81,18 @@ testData.forEach(data => {
             });
 
             describe('Job details', () => {
-                beforeEach(async () => {
-                    await careerPage.loadResults(data.Country, data.City, data.Skill);
+                let lastPosition;
+                before(async () => {
+                    lastPosition = await careerPage.getLastPosition();
                     await careerPage.applyForPosition();
                 });
 
-                it('should have proper location', async () => {
+                it(`should have proper location ${data.City}`, async () => {
                     expect(await careerPage.jobHeader.getText()).to.be.contain(data.City);
                 });
 
-                it('should have proper position', async () => {
-                    expect(await careerPage.jobHeader.getText()).to.be.contain(data.Position);
+                it(`should have proper position ${data.Position}`, async () => {
+                    expect(await careerPage.jobHeader.getText()).to.be.contain(lastPosition);
                 });
 
                 it('should have mandatory fields', async () => {

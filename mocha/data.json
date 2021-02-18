@@ -4,5 +4,11 @@
         "City": "Debrecen",
         "Skill": "Software Test Engineering",
         "Position": "Test Automation Engineer"
+    },
+    {
+        "Country": "Netherlands",
+        "City": "Hoofddorp",
+        "Skill": "Software Architecture",
+        "Position": "Test Automation Architect"
     }
 ]
