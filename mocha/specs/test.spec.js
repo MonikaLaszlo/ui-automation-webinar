@@ -42,8 +42,8 @@ testData.forEach(data => {
                 describe.skip('Skills filter box', () => {
                     before(async () => {
                         await careerPage.selectSkill();
-
                     })
+                    
                     it(`should be able to select skill ${data.Skill}`, async () => {
                         expect(await careerPage.selectedSkill.getText()).to.contain(data.skill);
                     });

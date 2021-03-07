@@ -60,6 +60,7 @@ class CareerPage {
     async loadResults(country, city, ...skills) {
         const query = { country, city, department: skills };
         await this.load(`https://epam.com/careers/job-listings?${objToQueryString(query)}`);
+        await browser.wait(ec.visibilityOf(this.logo), GLOBAL_TIMEOUT);
     }
 
     async applyForPosition() {

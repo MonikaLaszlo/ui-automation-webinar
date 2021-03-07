@@ -7,12 +7,23 @@ exports.config = {
     capabilities: {
         browserName: 'chrome'
     },
+    multiCapabilities: [{
+        'browserName': 'firefox'
+    }, {
+        'browserName': 'chrome'
+    }],
     directConnect: true,
     cucumberOpts: {
-        require: ['./step_definitions/**/*.js'],
+        require: ['./step_definitions/**/*.js',
+            './step_definitions/hooks.js'],
         tags: ['~@wip'],
-        format: ['progress', 'json:cucumber.json']
+        format: ['progress', 'json:.tmp/results.json'],
     },
+    plugins: [
+        {
+            package: "protractor-simple-cucumber-html-reporter-plugin",
+        }
+    ],
     framework: 'custom',
     frameworkPath: require.resolve('protractor-cucumber-framework'),
     getPageTimeout: GLOBAL_TIMEOUT,
