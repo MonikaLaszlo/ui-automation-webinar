@@ -5,13 +5,15 @@ const GLOBAL_TIMEOUT = 40e3;
 exports.config = {
     specs: 'features/**/*.feature',
     capabilities: {
-        browserName: 'chrome'
+        browserName: 'chrome',
+        chromeOptions: { args: [ "--headless", "--disable-gpu", "--window-size=1920,1080"] } 
     },
-    multiCapabilities: [{
+    /*multiCapabilities: [{
         'browserName': 'firefox'
     }, {
         'browserName': 'chrome'
     }],
+    */
     directConnect: true,
     cucumberOpts: {
         require: ['./step_definitions/**/*.js',
