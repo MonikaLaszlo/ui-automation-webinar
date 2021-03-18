@@ -5,11 +5,12 @@ const GLOBAL_TIMEOUT = 40e3;
 exports.config = {
     specs: 'specs/**/*.spec.js',
     capabilities: {
-        browserName: 'firefox'
+        browserName: 'chrome'
     },
     directConnect: true,
     mochaOpts: {
-        reporter: 'spec'
+        reporter: 'spec',
+        delay: true
     },
     framework: 'mocha',
     getPageTimeout: GLOBAL_TIMEOUT,
